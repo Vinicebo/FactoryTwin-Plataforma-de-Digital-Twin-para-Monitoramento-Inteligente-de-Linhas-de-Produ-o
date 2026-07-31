@@ -1,0 +1,18 @@
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+    "B008",  # Depends() no default de argumento é o idioma do FastAPI
+    "E501",  # comprimento tratado pelo formatter
+]
+
+[lint.per-file-ignores]
+# Os testes acessam estado interno do simulador de propósito.
+"tests/*" = ["SLF001"]
+"app/db/init_db.py" = ["E402"]
+"tests/conftest.py" = ["E402"]
+
+[lint.isort]
+known-first-party = ["app"]

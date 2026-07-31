@@ -1,0 +1,18 @@
+# Instale sempre num virtualenv — ver README (seção "Ambiente de desenvolvimento").
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.34,<1.0
+sqlalchemy>=2.0.36,<2.1
+psycopg[binary]>=3.2,<4.0
+alembic>=1.14,<2.0
+pydantic>=2.10,<3.0
+pydantic-settings>=2.7,<3.0
+email-validator>=2.1,<3.0
+python-jose[cryptography]>=3.3,<4.0
+passlib[bcrypt]>=1.7.4,<2.0
+bcrypt>=4.0,<4.1
+python-multipart>=0.0.20
+websockets>=14.1
+pandas>=2.2,<3.0
+numpy>=2.0,<3.0
+scikit-learn>=1.5,<2.0
+joblib>=1.4,<2.0

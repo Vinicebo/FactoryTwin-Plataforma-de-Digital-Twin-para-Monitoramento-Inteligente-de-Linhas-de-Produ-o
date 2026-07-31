@@ -1,0 +1,54 @@
+name: factorytwin
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-factorytwin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-factorytwin}
+      POSTGRES_DB: ${POSTGRES_DB:-factorytwin}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      # O backend só sobe depois que o Postgres aceita conexões; sem isso o
+      # `create_all` do boot falharia na primeira execução.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-factorytwin} -d ${POSTGRES_DB:-factorytwin}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-factorytwin}:${POSTGRES_PASSWORD:-factorytwin}@db:5432/${POSTGRES_DB:-factorytwin}
+      SECRET_KEY: ${SECRET_KEY:-troque-esta-chave-em-producao-factorytwin}
+      ENVIRONMENT: ${ENVIRONMENT:-docker}
+      DEBUG: ${DEBUG:-false}
+      SIMULATOR_ENABLED: ${SIMULATOR_ENABLED:-true}
+      SIMULATOR_TICK_SECONDS: ${SIMULATOR_TICK_SECONDS:-2.0}
+      FIRST_ADMIN_USERNAME: ${FIRST_ADMIN_USERNAME:-admin}
+      FIRST_ADMIN_PASSWORD: ${FIRST_ADMIN_PASSWORD:-admin123}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+    volumes:
+      # O modelo treinado sobrevive a recriações do contêiner.
+      - ml_artifacts:/app/app/ml/artifacts
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  ml_artifacts:
