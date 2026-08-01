@@ -24,6 +24,7 @@ dist/
 dist-ssr/
 .vite/
 *.local
+*.tsbuildinfo
 
 # Ambiente
 .env
